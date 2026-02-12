@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from models.linear_regression import LinearRegression
+
+
 app = FastAPI()
 
-# Allow frontend to talk to backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -11,13 +13,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Simple model lookup dictionary
+MODEL_REGISTRY = {"linear_regression": LinearRegression}
+
 
 @app.get("/")
 def root():
-    return {"message": "Backend is running"}
+    return {"status": "running"}
 
 
 @app.post("/train")
-def train():
-    # TODO: Replace this with real model logic later
-    return {"predictions": [0, 0, 0]}
+def train(data: dict):
+
+    model_name = data.get("model_name")
+    X = data.get("X", [])
+    y = data.get("y", [])
+
+    if model_name not in MODEL_REGISTRY:
+        return {"error": "Model not found"}
+
+    model_class = MODEL_REGISTRY[model_name]
+    model = model_class()
+
+    model.train(X, y)
+    predictions = model.predict(X)
+
+    return {"model_used": model_name, "predictions": predictions}
