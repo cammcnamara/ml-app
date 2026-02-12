@@ -2,7 +2,7 @@ from .base_model import BaseModel
 from sklearn.linear_model import LogisticRegression as SklearnLogistic
 
 
-class LinearRegression(BaseModel):
+class LogisticRegression(BaseModel):
 
     def __init__(self):
         self.model = SklearnLogistic()
