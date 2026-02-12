@@ -1,7 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import UploadFile, File
+import pandas as pd
+import io
+
 
 from models.linear_regression import LinearRegression
+from models.logistic_regression import LogisticRegression
+from models.knn import KNN
+from models.decision_tree import DecisionTree
 
 
 app = FastAPI()
@@ -24,18 +31,40 @@ def root():
 
 @app.post("/train")
 def train(data: dict):
+    global CURRENT_DATASET
 
     model_name = data.get("model_name")
-    X = data.get("X", [])
-    y = data.get("y", [])
+    predictors = data.get("predictors")
+    target = data.get("target")
+
+    if CURRENT_DATASET is None:
+        return {"error": "No dataset uploaded"}
 
     if model_name not in MODEL_REGISTRY:
         return {"error": "Model not found"}
 
-    model_class = MODEL_REGISTRY[model_name]
-    model = model_class()
+    X = CURRENT_DATASET[predictors].values
+    y = CURRENT_DATASET[target].values
 
+    model = MODEL_REGISTRY[model_name]()
     model.train(X, y)
+
     predictions = model.predict(X)
 
-    return {"model_used": model_name, "predictions": predictions}
+    return {"predictions": predictions}
+
+
+# Temporary in-memory dataset storage
+CURRENT_DATASET = None
+
+
+@app.post("/upload")
+async def upload_csv(file: UploadFile = File(...)):
+    global CURRENT_DATASET
+
+    contents = await file.read()
+    df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
+
+    CURRENT_DATASET = df
+
+    return {"columns": list(df.columns)}
