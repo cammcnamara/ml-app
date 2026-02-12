@@ -1,0 +1,45 @@
+# =========================
+# Python
+# =========================
+
+# Virtual environment
+backend/venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment files
+.env
+
+# Mac system files
+.DS_Store
+
+
+# =========================
+# Node / React
+# =========================
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Build output
+frontend/build/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# =========================
+# IDE / Editor
+# =========================
+
+.vscode/
+.idea/
