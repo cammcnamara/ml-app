@@ -63,8 +63,10 @@ async def upload_csv(file: UploadFile = File(...)):
     global CURRENT_DATASET
 
     contents = await file.read()
-    df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
-
+    try:
+        df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
+    except UnicodeDecodeError:
+        df = pd.read_csv(io.StringIO(contents.decode("latin1")))
     CURRENT_DATASET = df
 
     return {"columns": list(df.columns)}
