@@ -1,0 +1,39 @@
+:root {
+  --bg-base: #020817;
+  --bg-panel-a: rgba(8, 14, 28, 0.98);
+  --bg-panel-b: rgba(4, 9, 20, 0.99);
+
+  --border-subtle: rgba(148, 163, 184, 0.06);
+  --border-default: rgba(148, 163, 184, 0.13);
+  --border-active: rgba(96, 165, 250, 0.55);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #60a5fa;
+  --accent-glow: rgba(37, 99, 235, 0.28);
+
+  --success: rgba(16, 185, 129, 0.9);
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --success-border: rgba(16, 185, 129, 0.25);
+  --error-bg: rgba(239, 68, 68, 0.08);
+  --error-border: rgba(239, 68, 68, 0.3);
+  --error-text: #fca5a5;
+
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 13px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Fira Mono", monospace;
+
+  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-med: 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slide: 560ms cubic-bezier(0.4, 0, 0.2, 1);
+}

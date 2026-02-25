@@ -3,10 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import UploadFile, File
 import pandas as pd
 import io
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
 
 
 from models.linear_regression import LinearRegression
 from models.logistic_regression import LogisticRegression
+from models.ridge_regression import RidgeRegression
 from models.knn import KNN
 from models.decision_tree import DecisionTree
 
@@ -21,7 +24,13 @@ app.add_middleware(
 )
 
 # Simple model lookup dictionary
-MODEL_REGISTRY = {"linear_regression": LinearRegression}
+MODEL_REGISTRY = {
+    "linear_regression": LinearRegression,
+    "logistic_regression": LogisticRegression,
+    "knn": KNN,
+    "decision_tree": DecisionTree,
+    "ridge_regression": RidgeRegression,
+}
 
 
 @app.get("/")
@@ -33,25 +42,59 @@ def root():
 def train(data: dict):
     global CURRENT_DATASET
 
-    model_name = data.get("model_name")
-    predictors = data.get("predictors")
-    target = data.get("target")
-
     if CURRENT_DATASET is None:
         return {"error": "No dataset uploaded"}
 
-    if model_name not in MODEL_REGISTRY:
-        return {"error": "Model not found"}
+    model_names = data.get("model_names", [])
+    predictors = data.get("predictors", [])
+    target = data.get("target")
 
-    X = CURRENT_DATASET[predictors].values
-    y = CURRENT_DATASET[target].values
+    if not model_names:
+        return {"error": "No models selected"}
 
-    model = MODEL_REGISTRY[model_name]()
-    model.train(X, y)
+    if not predictors:
+        return {"error": "No predictors selected"}
 
-    predictions = model.predict(X)
+    if not target:
+        return {"error": "No target selected"}
 
-    return {"predictions": predictions}
+    for model_name in model_names:
+        if model_name not in MODEL_REGISTRY:
+            return {"error": f"Model {model_name} not found"}
+
+    try:
+        X = CURRENT_DATASET[predictors].values
+        y = CURRENT_DATASET[target].values
+    except KeyError:
+        return {"error": "Invalid column selection"}
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    results = {}
+
+    for model_name in model_names:
+        model = MODEL_REGISTRY[model_name]()
+        model.train(X_train, y_train)
+        predictions = model.predict(X_test)
+
+        if model_name in ["linear_regression", "ridge_regression"]:
+            mse = mean_squared_error(y_test, predictions)
+            rmse = mse**0.5
+            r2 = r2_score(y_test, predictions)
+
+            results[model_name] = {
+                "mse": float(mse),
+                "rmse": float(rmse),
+                "r2": float(r2),
+            }
+
+        else:  # classification
+            acc = accuracy_score(y_test, predictions)
+            results[model_name] = {"accuracy": float(acc)}
+
+    return results
 
 
 # Temporary in-memory dataset storage

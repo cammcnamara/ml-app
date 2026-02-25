@@ -1,0 +1,44 @@
+/* ─── Panel content entry (staggered fade-up) ─────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel__eyebrow {
+  animation: fadeUp 0.4s var(--ease-out) 0.05s both;
+}
+
+.panel__title {
+  animation: fadeUp 0.4s var(--ease-out) 0.1s both;
+}
+
+.panel__subtitle {
+  animation: fadeUp 0.4s var(--ease-out) 0.15s both;
+}
+
+.panel__body {
+  animation: fadeUp 0.4s var(--ease-out) 0.2s both;
+}
+
+/* ─── Spinner ─────────────────────────────────────────────── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
