@@ -1,7 +1,9 @@
+# Backend dependencies for FastAPI API + scikit-learn model wrappers.
+# Customize by pinning versions once your environment is stable.
 fastapi
-uvicorn
+uvicorn>=0.30.0
+click>=8.0
 numpy
 pandas
 scikit-learn
 python-multipart
-pandas

@@ -1,3 +1,4 @@
+/* Design tokens: colors, radii, fonts, transitions. Used by layout and components. */
 :root {
   --bg-base: #020817;
   --bg-panel-a: rgba(8, 14, 28, 0.98);

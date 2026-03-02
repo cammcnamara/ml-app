@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Frontend (React + Vite)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+React JSX frontend for the ML app wizard.
 
-## Available Scripts
+## Run
 
-In the project directory, you can run:
+```bash
+cd /Users/cammcnamara/Documents/Code/ml-app/frontend
+npm install
+npm run dev
+```
 
-### `npm start`
+Build:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+npm run build
+npm run preview
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## File Map
 
-### `npm test`
+- `index.html`: app shell and `#app` mount point.
+- `vite.config.js`: Vite + React SWC config.
+- `src/main.jsx`: entrypoint that mounts React app and imports global CSS.
+- `src/App.jsx`: root state machine and scene orchestration.
+- `src/api.js`: API helpers (`uploadCsv`, `train`).
+- `src/config/models.js`: model options shown in UI.
+- `src/components/`: step cards.
+- `src/components/layout/`: shell layout and step indicator.
+- `src/styles/`: variables/layout/components/transitions CSS.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Customization Guide
 
-### `npm run build`
+### Update backend URL
+Edit `src/api.js`:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```js
+const API_BASE = 'http://127.0.0.1:8000'
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Add/remove models in the UI
+Edit `src/config/models.js` and keep IDs aligned with backend `MODEL_REGISTRY`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Modify step flow
+Edit `sceneConfigs` and `canAdvance` in `src/App.jsx`.
 
-### `npm run eject`
+### Theme changes
+Start in `src/styles/variables.css`, then adjust `components.css` as needed.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## JSX Quick Notes
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- JSX looks like HTML but is JavaScript.
+- Use `className` instead of `class`.
+- Use `{}` for JS expressions: `<div>{value}</div>`.
+- Conditionals: `{ok && <Badge />}`.
+- Lists: `{rows.map((r) => <Row key={r.id} />)}`.
+- Props are function inputs for components:
+  - `<Card title="A" onClick={fn} />`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Pattern used in this app:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```jsx
+<scene.left.component {...scene.left.props} />
+```
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+That renders a component dynamically from config and spreads object props into it.

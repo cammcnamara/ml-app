@@ -1,3 +1,14 @@
+/**
+ * One side of a scene (left or right).
+ *
+ * Shows:
+ * - eyebrow (step label)
+ * - title (panel title)
+ * - subtitle (short description)
+ * - body content via `children` (card components like UploadCard, ResultsCard).
+ */
+import React from 'react'
+
 function Panel({ side, eyebrow, title, subtitle, children }) {
   return (
     <div className={`panel panel--${side}`}>
@@ -6,7 +17,8 @@ function Panel({ side, eyebrow, title, subtitle, children }) {
       {subtitle && <p className="panel__subtitle">{subtitle}</p>}
       <div className="panel__body">{children}</div>
     </div>
-  );
+  )
 }
 
-export default Panel;
+export default Panel
+

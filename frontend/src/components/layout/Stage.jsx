@@ -1,10 +1,28 @@
-import Panel from "./Panel";
-import StepIndicator from "./StepIndicator";
+/**
+ * Stage layout component.
+ *
+ * Responsibilities:
+ * - Renders the app shell: brand header, sliding \"stage\" track, and bottom nav.
+ * - Accepts a `scenes` array where each scene has a `label` and left/right panels.
+ * - Uses `currentScene` to slide the track horizontally (CSS transform).
+ * - Shows Back / Continue buttons and a dot-based step indicator.
+ *
+ * JSX note:
+ * - `<scene.left.component {...scene.left.props} />` renders whichever component
+ *   function is stored in `scene.left.component`.
+ */
+import React, { useMemo } from 'react'
+import Panel from './Panel.jsx'
+import StepIndicator from './StepIndicator.jsx'
 
-function Stage({ scenes, currentScene, onNext, onBack, canAdvance }) {
-  const isFirst = currentScene === 0;
-  const isLast = currentScene === scenes.length - 1;
-  const active = scenes[currentScene];
+function Stage({ scenes, currentScene, canAdvance, onNext, onBack }) {
+  const activeScene = useMemo(
+    () => (scenes && scenes.length ? scenes[currentScene] ?? null : null),
+    [currentScene, scenes],
+  )
+
+  const isFirst = currentScene === 0
+  const isLast = currentScene === scenes.length - 1
 
   return (
     <div className="app">
@@ -12,8 +30,8 @@ function Stage({ scenes, currentScene, onNext, onBack, canAdvance }) {
         <span className="app-header__brand">
           ML <span>Canvas</span>
         </span>
-        {active && (
-          <span className="app-header__scene">{active.label}</span>
+        {activeScene && (
+          <span className="app-header__scene">{activeScene.label}</span>
         )}
       </header>
 
@@ -30,16 +48,19 @@ function Stage({ scenes, currentScene, onNext, onBack, canAdvance }) {
                 title={scene.left.title}
                 subtitle={scene.left.subtitle}
               >
-                {scene.left.content}
+                {scene.left.component && (
+                  <scene.left.component {...scene.left.props} />
+                )}
               </Panel>
-
               <Panel
                 side="b"
                 eyebrow={scene.right.eyebrow}
                 title={scene.right.title}
                 subtitle={scene.right.subtitle}
               >
-                {scene.right.content}
+                {scene.right.component && (
+                  <scene.right.component {...scene.right.props} />
+                )}
               </Panel>
             </div>
           ))}
@@ -49,7 +70,11 @@ function Stage({ scenes, currentScene, onNext, onBack, canAdvance }) {
       <nav className="stage-nav">
         <div className="stage-nav__side">
           {!isFirst && (
-            <button className="btn btn--ghost" onClick={onBack}>
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={onBack}
+            >
               ← Back
             </button>
           )}
@@ -60,9 +85,10 @@ function Stage({ scenes, currentScene, onNext, onBack, canAdvance }) {
         <div className="stage-nav__side stage-nav__side--right">
           {!isLast && (
             <button
+              type="button"
               className="btn btn--primary"
-              onClick={onNext}
               disabled={!canAdvance}
+              onClick={onNext}
             >
               Continue →
             </button>
@@ -70,7 +96,7 @@ function Stage({ scenes, currentScene, onNext, onBack, canAdvance }) {
         </div>
       </nav>
     </div>
-  );
+  )
 }
 
-export default Stage;
+export default Stage

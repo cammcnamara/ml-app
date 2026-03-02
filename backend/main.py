@@ -1,3 +1,16 @@
+"""
+FastAPI backend for ML Canvas.
+
+What this file does:
+- Defines API endpoints for health check, CSV upload, and model training.
+- Stores the currently uploaded dataset in memory (`CURRENT_DATASET`).
+- Maps frontend model IDs to Python model classes in `MODEL_REGISTRY`.
+
+How to customize:
+- Add/remove model classes in `MODEL_REGISTRY` to control what the UI can train.
+- Tighten CORS by changing `allow_origins` from `"*"` to specific frontend URLs.
+- Replace in-memory storage with a database or file cache if you need persistence.
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import UploadFile, File

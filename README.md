@@ -1,243 +1,192 @@
-# Machine Learning Web Application
+# ML App Repository
 
-A full-stack web application for training and testing machine learning models, built with FastAPI (backend) and React (frontend).
+Cleaned full-stack machine learning app with:
+- `backend/`: FastAPI API for CSV upload + model training
+- `frontend/`: React (JSX) wizard UI
 
-## ⚠️ Important Note
+This repository was cleaned to keep one frontend implementation (React JSX) and remove duplicate Vue files/build artifacts.
 
-**This project is a SCAFFOLD ONLY.** All machine learning logic contains placeholder functions with TODO comments. The actual ML implementations need to be completed by you.
+## What Runs
 
-## 🏗️ Project Structure
+- Backend API: `http://127.0.0.1:8000`
+- Frontend UI (dev): Vite local URL (usually `http://127.0.0.1:5173`)
 
-```
-ml-app/
-│
-├── backend/                 # FastAPI Backend
-│   ├── main.py             # API routes and server
-│   ├── models/             # ML model implementations (PLACEHOLDERS)
-│   │   ├── base_model.py
-│   │   ├── linear_regression.py
-│   │   ├── logistic_regression.py
-│   │   ├── knn.py
-│   │   └── decision_tree.py
-│   ├── services/
-│   │   └── training_service.py
-│   ├── utils/
-│   │   └── preprocessing.py
-│   ├── datasets/           # Store preloaded datasets here
-│   └── requirements.txt
-│
-└── frontend/               # React Frontend
-    ├── public/
-    ├── src/
-    │   ├── App.jsx
-    │   ├── api.js
-    │   ├── pages/
-    │   │   ├── Home.jsx
-    │   │   ├── TaskSelect.jsx
-    │   │   ├── ModelSelect.jsx
-    │   │   └── TrainPage.jsx
-    │   ├── components/
-    │   │   ├── ModelCard.jsx
-    │   │   ├── DatasetUploader.jsx
-    │   │   ├── DatasetSelector.jsx
-    │   │   └── ResultsDisplay.jsx
-    │   └── styles/
-    │       └── globals.css
-    └── package.json
-```
+## Quick Start
 
-## 🚀 Quick Start
-
-### Backend Setup
+### 1) Backend
 
 ```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
+cd /Users/cammcnamara/Documents/Code/ml-app/backend
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-
-# Run server
-uvicorn main:app --reload
+uvicorn main:app --reload --port 8000
 ```
 
-Backend will run on `http://localhost:8000`
-
-### Frontend Setup
+### 2) Frontend
 
 ```bash
-cd frontend
-
-# Install dependencies
+cd /Users/cammcnamara/Documents/Code/ml-app/frontend
 npm install
-
-# Run development server
-npm start
+npm run dev
 ```
 
-Frontend will run on `http://localhost:3000`
+### 3) Production Build Check
 
-## 📋 Features
+```bash
+cd /Users/cammcnamara/Documents/Code/ml-app/frontend
+npm run build
+```
 
-### Current (Scaffolded)
+## Repository Layout
 
-- ✅ Interactive landing page
-- ✅ Task type selection (Classification/Regression)
-- ✅ Dynamic model loading
-- ✅ CSV dataset upload
-- ✅ Preloaded dataset selection
-- ✅ API endpoints for training
-- ✅ Results display interface
-- ✅ Clean, professional UI
+```text
+ml-app/
+├── backend/
+│   ├── main.py
+│   ├── requirements.txt
+│   └── models/
+│       ├── base_model.py
+│       ├── linear_regression.py
+│       ├── logistic_regression.py
+│       ├── ridge_regression.py
+│       ├── knn.py
+│       └── decision_tree.py
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── api.js
+│       ├── config/models.js
+│       ├── components/
+│       └── styles/
+└── README.md
+```
 
-### To Be Implemented (By You)
+## File-by-File Customization Guide
 
-All model logic in `backend/models/` needs implementation:
+### Backend
 
-#### 1. Linear Regression ([linear_regression.py](backend/models/linear_regression.py))
-- [ ] Gradient descent training loop
-- [ ] Weight and bias updates
-- [ ] Prediction formula
-- [ ] Loss tracking
+- `backend/main.py`
+  - Purpose: API routes (`/`, `/upload`, `/train`) and model execution flow.
+  - Customize:
+    - Add models by editing `MODEL_REGISTRY`.
+    - Change CORS rules in `app.add_middleware(...)`.
+    - Replace `CURRENT_DATASET` in-memory storage with persistent storage.
 
-#### 2. Logistic Regression ([logistic_regression.py](backend/models/logistic_regression.py))
-- [ ] Sigmoid activation function
-- [ ] Binary cross-entropy loss
-- [ ] Gradient calculation
-- [ ] Probability predictions
+- `backend/models/base_model.py`
+  - Purpose: interface contract for all model wrappers.
+  - Customize: keep `train(X, y)` and `predict(X)` signatures stable.
 
-#### 3. K-Nearest Neighbors ([knn.py](backend/models/knn.py))
-- [ ] Euclidean distance calculation
-- [ ] K-neighbor selection
-- [ ] Majority voting (classification)
-- [ ] Mean calculation (regression)
+- `backend/models/*.py`
+  - Purpose: each file wraps a sklearn model.
+  - Customize:
+    - tune constructor defaults (`alpha`, `max_depth`, `n_neighbors`, etc.)
+    - replace sklearn wrapper with your own algorithm while keeping same public methods.
 
-#### 4. Decision Tree ([decision_tree.py](backend/models/decision_tree.py))
-- [ ] Gini impurity / variance calculation
-- [ ] Information gain computation
-- [ ] Best split selection
-- [ ] Recursive tree building
-- [ ] Tree traversal for predictions
+- `backend/requirements.txt`
+  - Purpose: Python dependencies.
+  - Customize: pin versions once your environment is stable.
 
-#### 5. Preprocessing ([utils/preprocessing.py](backend/utils/preprocessing.py))
-- [ ] Train/test split
-- [ ] Normalization
-- [ ] Standardization
-- [ ] Missing value handling
-- [ ] Categorical encoding
+### Frontend
 
-## 🎯 User Flow
+- `frontend/index.html`
+  - Purpose: single HTML shell containing `#app` mount target.
+  - Customize: page `<title>`, metadata, static head tags.
 
-1. **Home Page** → Click "Get Started"
-2. **Task Selection** → Choose Classification or Regression
-3. **Model Selection** → Pick an ML model
-4. **Training Page** → Upload CSV or select preloaded dataset → Train → View results
+- `frontend/src/main.jsx`
+  - Purpose: React entrypoint; mounts `<App />` and imports global CSS files.
+  - Customize: global providers, additional global styles.
 
-## 📊 Available Models
+- `frontend/src/App.jsx`
+  - Purpose: central state + step flow orchestration.
+  - Customize:
+    - add/remove wizard scenes in `sceneConfigs`
+    - change navigation gating in `canAdvance`
+    - adjust upload/train behavior in `handleUpload` and `handleTrain`.
 
-### Classification
-- Logistic Regression
-- K-Nearest Neighbors
-- Decision Tree Classifier
+- `frontend/src/api.js`
+  - Purpose: backend request helpers.
+  - Customize: `API_BASE`, auth headers, error handling shape.
 
-### Regression
-- Linear Regression
-- K-Nearest Neighbors Regressor
-- Decision Tree Regressor
+- `frontend/src/config/models.js`
+  - Purpose: model choices shown in UI.
+  - Customize: add/remove model IDs and labels to match backend registry.
 
-## 📁 Preloaded Datasets
+- `frontend/src/components/*.jsx`
+  - Purpose: presentational cards and interactions per step.
+  - Customize: text, inputs, conditional rendering, UX behavior.
 
-The following datasets are available (currently returning synthetic data):
+- `frontend/src/components/layout/*.jsx`
+  - Purpose: shell layout, panel framing, step indicator.
+  - Customize: scene layout, nav behavior, indicator style.
 
-- **Iris** - Classification
-- **Wine Quality** - Classification
-- **Boston Housing** - Regression
-- **Diabetes** - Regression
-- **California Housing** - Regression
+- `frontend/src/styles/*.css`
+  - Purpose: design tokens + layout + component visuals + animations.
+  - Customize (best order):
+    1. `variables.css` (colors/radius/fonts)
+    2. `layout.css` (page structure)
+    3. `components.css` (card/button/input look)
+    4. `transitions.css` (motion)
 
-You can implement real dataset loading in [training_service.py](backend/services/training_service.py:30).
+## JSX Syntax Notes (Beginner-Friendly)
 
-## 🔧 API Endpoints
+JSX is JavaScript syntax that looks like HTML.
 
-- `GET /` - Health check
-- `GET /models/{task_type}` - Get available models
-- `GET /datasets` - Get preloaded datasets
-- `POST /upload` - Upload and validate CSV
-- `POST /train/{model_name}` - Train model and get predictions
+### Core rules
 
-API documentation available at `http://localhost:8000/docs` when backend is running.
+- Use `className`, not `class`:
+  - `className="btn"`
+- Use `{}` to run JS inside JSX:
+  - `<div>{userName}</div>`
+- Conditional rendering:
+  - `{isLoading && <Spinner />}`
+- Lists need `key`:
+  - `{items.map((item) => <Row key={item.id} />)}`
+- Fragments avoid extra wrapper divs:
+  - `<>...</>`
 
-## 📝 Implementation Checklist
+### Props
 
-### High Priority
-- [ ] Implement gradient descent for Linear Regression
-- [ ] Implement sigmoid and loss for Logistic Regression
-- [ ] Implement distance calculations for KNN
-- [ ] Implement tree building for Decision Tree
-- [ ] Implement train/test split
+- Pass data to components like attributes:
+  - `<UploadCard file={file} onUpload={handleUpload} />`
+- `onSomething` props are callback functions.
 
-### Medium Priority
-- [ ] Add evaluation metrics (accuracy, MSE, R², etc.)
-- [ ] Implement data normalization
-- [ ] Add real dataset loading
-- [ ] Handle missing values
+### State
 
-### Nice to Have
-- [ ] Add cross-validation
-- [ ] Implement hyperparameter tuning
-- [ ] Add visualization for predictions
-- [ ] Add confusion matrix for classification
-- [ ] Export trained models
+- `const [value, setValue] = useState(initial)`
+- Call `setValue(next)` to trigger re-render.
 
-## 🎓 Learning Resources
+### Dynamic component pattern used here
 
-Each model file contains detailed TODO comments explaining:
-- What needs to be implemented
-- The mathematical formulas involved
-- Step-by-step implementation guides
+In `Stage.jsx`, this is valid JSX:
 
-## ⚙️ Tech Stack
+```jsx
+<scene.left.component {...scene.left.props} />
+```
 
-**Backend:**
-- FastAPI
-- Uvicorn
-- Pandas
-- NumPy
+It means: render the component function stored in `scene.left.component`, and pass all props from the object.
 
-**Frontend:**
-- React 18
-- React Router
-- Axios
-- CSS3
+## Common Custom Changes
 
-## 🚫 What's NOT Included
+1. Add a new model
+   - Backend: add class + `MODEL_REGISTRY` entry.
+   - Frontend: add same model ID in `src/config/models.js`.
 
-- ❌ Actual ML algorithm implementations
-- ❌ Real training loops
-- ❌ Evaluation metrics
-- ❌ Hyperparameter optimization
-- ❌ Data preprocessing logic
-- ❌ scikit-learn (intentionally excluded)
+2. Change API URL
+   - Edit `frontend/src/api.js` `API_BASE`.
 
-## 📖 Notes
+3. Adjust UI theme quickly
+   - Edit `frontend/src/styles/variables.css` only.
 
-- All models inherit from `BaseModel` class
-- Models must implement `fit()` and `predict()` methods
-- Current predictions are dummy values (zeros or random)
-- The structure is production-ready, only logic is missing
-- Follow the TODO comments in each file for guidance
+4. Add a new wizard step
+   - Update `sceneConfigs` in `frontend/src/App.jsx`.
 
-## 🤝 Contributing
+## Notes
 
-This is a personal learning project. Implement the ML algorithms yourself to maximize learning!
-
-## 📄 License
-
-This scaffold is provided as-is for educational purposes.
-
----
-
-**Remember:** The goal is to learn by implementing. Don't skip the TODO comments - they're your roadmap to understanding ML algorithms!
+- Uploaded dataset is currently stored in memory (`CURRENT_DATASET`) and resets when backend restarts.
+- KNN/DecisionTree wrappers are classification-focused right now.
+- The frontend build currently succeeds with `npm run build`.
