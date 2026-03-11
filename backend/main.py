@@ -3,22 +3,21 @@ FastAPI backend for ML Canvas.
 
 What this file does:
 - Defines API endpoints for health check, CSV upload, and model training.
-- Stores the currently uploaded dataset in memory (`CURRENT_DATASET`).
+- Stateless: /train accepts the CSV file directly alongside training config.
 - Maps frontend model IDs to Python model classes in `MODEL_REGISTRY`.
 
 How to customize:
 - Add/remove model classes in `MODEL_REGISTRY` to control what the UI can train.
 - Tighten CORS by changing `allow_origins` from `"*"` to specific frontend URLs.
-- Replace in-memory storage with a database or file cache if you need persistence.
 """
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import UploadFile, File
-import pandas as pd
 import io
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
+import json
 
+from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
 
 from models.linear_regression import LinearRegression
 from models.logistic_regression import LogisticRegression
@@ -36,7 +35,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Simple model lookup dictionary
 MODEL_REGISTRY = {
     "linear_regression": LinearRegression,
     "logistic_regression": LogisticRegression,
@@ -46,38 +44,53 @@ MODEL_REGISTRY = {
 }
 
 
+def _parse_csv(contents: bytes) -> pd.DataFrame:
+    try:
+        return pd.read_csv(io.StringIO(contents.decode("utf-8")))
+    except UnicodeDecodeError:
+        return pd.read_csv(io.StringIO(contents.decode("latin1")))
+
+
 @app.get("/")
 def root():
     return {"status": "running"}
 
 
+@app.post("/upload")
+async def upload_csv(file: UploadFile = File(...)):
+    """Parse CSV and return column names. Stateless — nothing is stored."""
+    contents = await file.read()
+    df = _parse_csv(contents)
+    return {"columns": list(df.columns)}
+
+
 @app.post("/train")
-def train(data: dict):
-    global CURRENT_DATASET
-
-    if CURRENT_DATASET is None:
-        return {"error": "No dataset uploaded"}
-
-    model_names = data.get("model_names", [])
-    predictors = data.get("predictors", [])
-    target = data.get("target")
+async def train(
+    file: UploadFile = File(...),
+    model_names: str = Form(...),
+    predictors: str = Form(...),
+    target: str = Form(...),
+):
+    """Parse CSV, train selected models, return metrics. Fully stateless."""
+    model_names = json.loads(model_names)
+    predictors = json.loads(predictors)
 
     if not model_names:
         return {"error": "No models selected"}
-
     if not predictors:
         return {"error": "No predictors selected"}
-
     if not target:
         return {"error": "No target selected"}
-
     for model_name in model_names:
         if model_name not in MODEL_REGISTRY:
             return {"error": f"Model {model_name} not found"}
 
+    contents = await file.read()
+    df = _parse_csv(contents)
+
     try:
-        X = CURRENT_DATASET[predictors].values
-        y = CURRENT_DATASET[target].values
+        X = df[predictors].values
+        y = df[target].values
     except KeyError:
         return {"error": "Invalid column selection"}
 
@@ -86,7 +99,6 @@ def train(data: dict):
     )
 
     results = {}
-
     for model_name in model_names:
         model = MODEL_REGISTRY[model_name]()
         model.train(X_train, y_train)
@@ -94,35 +106,12 @@ def train(data: dict):
 
         if model_name in ["linear_regression", "ridge_regression"]:
             mse = mean_squared_error(y_test, predictions)
-            rmse = mse**0.5
-            r2 = r2_score(y_test, predictions)
-
             results[model_name] = {
                 "mse": float(mse),
-                "rmse": float(rmse),
-                "r2": float(r2),
+                "rmse": float(mse ** 0.5),
+                "r2": float(r2_score(y_test, predictions)),
             }
-
-        else:  # classification
-            acc = accuracy_score(y_test, predictions)
-            results[model_name] = {"accuracy": float(acc)}
+        else:
+            results[model_name] = {"accuracy": float(accuracy_score(y_test, predictions))}
 
     return results
-
-
-# Temporary in-memory dataset storage
-CURRENT_DATASET = None
-
-
-@app.post("/upload")
-async def upload_csv(file: UploadFile = File(...)):
-    global CURRENT_DATASET
-
-    contents = await file.read()
-    try:
-        df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
-    except UnicodeDecodeError:
-        df = pd.read_csv(io.StringIO(contents.decode("latin1")))
-    CURRENT_DATASET = df
-
-    return {"columns": list(df.columns)}

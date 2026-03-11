@@ -1,8 +1,9 @@
 /**
  * Backend API helpers. All ML Canvas API calls go through here.
- * Uses fetch; base URL is configurable via API_BASE.
+ * API_BASE is empty so requests are relative (same origin on Vercel).
+ * For local dev, set API_BASE = 'http://127.0.0.1:8000'.
  */
-const API_BASE = 'http://127.0.0.1:8000'
+const API_BASE = ''
 
 export async function uploadCsv(file) {
   const formData = new FormData()
@@ -12,12 +13,12 @@ export async function uploadCsv(file) {
   return data.columns || []
 }
 
-export async function train(options) {
-  const { model_names, predictors, target } = options
-  const res = await fetch(`${API_BASE}/train`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model_names, predictors, target }),
-  })
+export async function train({ file, model_names, predictors, target }) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('model_names', JSON.stringify(model_names))
+  formData.append('predictors', JSON.stringify(predictors))
+  formData.append('target', target)
+  const res = await fetch(`${API_BASE}/train`, { method: 'POST', body: formData })
   return res.json()
 }

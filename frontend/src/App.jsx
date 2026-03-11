@@ -189,6 +189,7 @@ function App() {
     setError('')
     try {
       const res = await train({
+        file,
         model_names: selectedModels,
         predictors,
         target,
