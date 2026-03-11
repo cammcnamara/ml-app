@@ -1,15 +1,9 @@
 /**
  * Stage layout component.
  *
- * Responsibilities:
- * - Renders the app shell: brand header, sliding \"stage\" track, and bottom nav.
- * - Accepts a `scenes` array where each scene has a `label` and left/right panels.
- * - Uses `currentScene` to slide the track horizontally (CSS transform).
- * - Shows Back / Continue buttons and a dot-based step indicator.
- *
- * JSX note:
- * - `<scene.left.component {...scene.left.props} />` renders whichever component
- *   function is stored in `scene.left.component`.
+ * Renders the app shell: brand header, vertical sliding stage track, and bottom nav.
+ * Scenes slide vertically (translateY). Within each scene, left and right panels
+ * stack as a single column.
  */
 import React, { useMemo } from 'react'
 import Panel from './Panel.jsx'
@@ -38,12 +32,11 @@ function Stage({ scenes, currentScene, canAdvance, onNext, onBack }) {
       <div className="stage-wrapper">
         <div
           className="stage-track"
-          style={{ transform: `translateX(-${currentScene * 100}%)` }}
+          style={{ transform: `translateY(-${currentScene * 100}%)` }}
         >
           {scenes.map((scene, i) => (
             <div key={i} className="scene">
               <Panel
-                side="a"
                 eyebrow={scene.left.eyebrow}
                 title={scene.left.title}
                 subtitle={scene.left.subtitle}
@@ -53,7 +46,6 @@ function Stage({ scenes, currentScene, canAdvance, onNext, onBack }) {
                 )}
               </Panel>
               <Panel
-                side="b"
                 eyebrow={scene.right.eyebrow}
                 title={scene.right.title}
                 subtitle={scene.right.subtitle}
@@ -75,7 +67,7 @@ function Stage({ scenes, currentScene, canAdvance, onNext, onBack }) {
               className="btn btn--ghost"
               onClick={onBack}
             >
-              ← Back
+              ↑ Back
             </button>
           )}
         </div>
@@ -90,7 +82,7 @@ function Stage({ scenes, currentScene, canAdvance, onNext, onBack }) {
               disabled={!canAdvance}
               onClick={onNext}
             >
-              Continue →
+              Continue ↓
             </button>
           )}
         </div>

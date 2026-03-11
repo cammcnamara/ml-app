@@ -1,16 +1,13 @@
-/* App shell, header, stage track, scenes, panels, nav, step indicator. #app is root. */
+/* App shell, header, vertical stage track, panels, nav, step indicator. */
+
 /* ─── Reset ──────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html,
-body,
-#app {
+html, body, #app {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -29,30 +26,57 @@ body,
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+}
+
+/* Subtle grid overlay */
+.app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(6, 182, 212, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ambient glow blobs */
+.app::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%, rgba(6, 182, 212, 0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 85% 100%, rgba(124, 58, 237, 0.07) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ─── Header ─────────────────────────────────────────────── */
 .app-header {
   flex-shrink: 0;
-  height: 52px;
+  height: 54px;
   display: flex;
   align-items: center;
-  padding: 0 44px;
+  padding: 0 48px;
   border-bottom: 1px solid var(--border-subtle);
-  background: rgba(2, 8, 23, 0.85);
+  background: rgba(3, 10, 22, 0.92);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  z-index: 20;
+  z-index: 30;
+  position: relative;
   gap: 20px;
 }
 
 .app-header__brand {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-muted);
-  flex-shrink: 0;
+  font-family: var(--font-mono);
 }
 
 .app-header__brand span {
@@ -60,9 +84,10 @@ body,
 }
 
 .app-header__scene {
-  font-size: 11px;
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  letter-spacing: 0.1em;
   color: var(--text-muted);
+  font-family: var(--font-mono);
 }
 
 /* ─── Stage ──────────────────────────────────────────────── */
@@ -70,67 +95,69 @@ body,
   flex: 1;
   overflow: hidden;
   position: relative;
+  z-index: 1;
 }
 
 .stage-track {
-  display: flex;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   transition: transform var(--transition-slide);
   will-change: transform;
 }
 
-/* ─── Scene (one pair of panels) ────────────────────────── */
+/* ─── Scene ──────────────────────────────────────────────── */
 .scene {
-  flex-shrink: 0;
-  width: 100vw;
-  height: 100%;
+  flex: 0 0 100%;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  padding: 56px 24px 80px;
+  gap: 8px;
+  position: relative;
 }
 
 /* ─── Panel ──────────────────────────────────────────────── */
 .panel {
-  flex: 1;
-  height: 100%;
+  width: 100%;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
-  padding: 56px 60px 40px;
-  overflow-y: auto;
-  position: relative;
+  padding: 44px 52px;
 }
 
-.panel--a {
-  background: var(--bg-panel-a);
-  border-right: 1px solid var(--border-subtle);
-}
-
-.panel--b {
-  background: var(--bg-panel-b);
+.panel + .panel {
+  padding-top: 0;
+  margin-top: 4px;
 }
 
 .panel__eyebrow {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 14px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  opacity: 0.65;
 }
 
 .panel__title {
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.15;
+  line-height: 1.1;
   margin-bottom: 10px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.025em;
 }
 
 .panel__subtitle {
   font-size: 14px;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 44px;
-  max-width: 420px;
+  line-height: 1.65;
+  margin-bottom: 36px;
+  max-width: 440px;
 }
 
 .panel__body {
@@ -142,16 +169,17 @@ body,
 /* ─── Nav Bar ────────────────────────────────────────────── */
 .stage-nav {
   flex-shrink: 0;
-  height: 68px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 44px;
+  padding: 0 48px;
   border-top: 1px solid var(--border-subtle);
-  background: rgba(2, 8, 23, 0.9);
+  background: rgba(3, 10, 22, 0.94);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  z-index: 20;
+  z-index: 30;
+  position: relative;
 }
 
 .stage-nav__side {
@@ -167,12 +195,12 @@ body,
 .step-indicator {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .step-indicator__dot {
-  height: 5px;
-  width: 5px;
+  height: 4px;
+  width: 4px;
   border-radius: 9999px;
   background: var(--text-muted);
   transition: all var(--transition-med);
@@ -180,22 +208,16 @@ body,
 }
 
 .step-indicator__dot--active {
-  background: var(--accent-light);
-  width: 22px;
+  background: var(--accent);
+  width: 24px;
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 .step-indicator__dot--done {
-  background: rgba(96, 165, 250, 0.35);
+  background: rgba(6, 182, 212, 0.3);
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 3px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-default);
-  border-radius: 2px;
-}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
