@@ -33,6 +33,7 @@ function App() {
   const [target, setTarget] = useState('')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const [uploadError, setUploadError] = useState('')
   const [training, setTraining] = useState(false)
   const [file, setFile] = useState(null)
   const [uploadLoading, setUploadLoading] = useState(false)
@@ -60,10 +61,12 @@ function App() {
           columns,
           file,
           uploadLoading,
+          uploadError,
           onUpload: handleUpload,
           onFileChange: (f) => {
             setFile(f)
             setColumns([])
+            setUploadError('')
           },
         },
       },
@@ -172,12 +175,13 @@ function App() {
   async function handleUpload() {
     if (!file) return
     setUploadLoading(true)
-    setError('')
+    setUploadError('')
     try {
       const cols = await uploadCsv(file)
+      if (cols.length === 0) throw new Error('No columns returned')
       setColumns(cols)
     } catch {
-      setError('Failed to upload dataset.')
+      setUploadError('Upload failed. Is the backend running on port 8000?')
     } finally {
       setUploadLoading(false)
     }

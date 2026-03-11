@@ -14,7 +14,7 @@
  */
 import React, { useRef } from 'react'
 
-function UploadCard({ columns, file, uploadLoading, onUpload, onFileChange }) {
+function UploadCard({ columns, file, uploadLoading, uploadError, onUpload, onFileChange }) {
   const inputRef = useRef(null)
 
   const handlePick = () => {
@@ -60,6 +60,10 @@ function UploadCard({ columns, file, uploadLoading, onUpload, onFileChange }) {
           {uploadLoading && <span className="spinner" />}
           {uploadLoading ? ' Uploading…' : 'Upload Dataset'}
         </button>
+      )}
+
+      {uploadError && (
+        <div className="error-banner">{uploadError}</div>
       )}
 
       {columns.length > 0 && (

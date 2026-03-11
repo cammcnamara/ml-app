@@ -3,7 +3,7 @@
  * API_BASE is empty so requests are relative (same origin on Vercel).
  * For local dev, set API_BASE = 'http://127.0.0.1:8000'.
  */
-const API_BASE = ''
+const API_BASE = 'http://127.0.0.1:8000'
 
 export async function uploadCsv(file) {
   const formData = new FormData()
